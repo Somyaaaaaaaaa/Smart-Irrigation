@@ -1,42 +1,61 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np
+import random
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.metrics import classification_report
-
-from sklearn.preprocessing import MinMaxScaler
 import joblib
 
-df = pd.read_csv("data.csv")
+data = pd.read_csv("data.csv")
 
-print("dataset preview:")
-print(df.head()) #prints the first 5 rows
+print("Dataset Preview:")
+print(data.head(), "\n")
 
-print(df.info()) #the datatype of the data 
+print("Dataset Info:")
+print(data.info(), "\n")
 
-print(df.columns) #shows the columns present in the dataset
+print("Columns:")
+print(data.columns, "\n")
 
-df= df.drop('Unnamed: 0', axis=1) #deletes the column
-print(df.head())
+if 'Unnamed: 0' in data.columns:
+    data.drop(columns=['Unnamed: 0'], inplace=True)
 
-print(df.describe().T) #shows how the data is distributed
-#T transposes the data so the rowas turn to columns
+print("After Cleaning:")
+print(data.head(), "\n")
 
-#feature and target selection
-#iloc refers to integer location
-X= df.iloc[:, 0:20] #features, independant variable 
-y= df.iloc[:, 20:] #labels/target, dependant variable
+print("Summary Statistics:")
+print(data.describe(), "\n")
 
-#for all the rows, we write [:]
+features = data[[col for col in data.columns if 'sensor' in col]]
+labels = data[[col for col in data.columns if 'parcel' in col]]
 
-print(X.sample(10))
+print("Sample Features:")
+print(features.sample(10, random_state=42), "\n")
 
-print(y.sample(10))
+print("Sample Labels:")
+print(labels.sample(10, random_state=42), "\n")
 
-print(X.info())
+print("Feature Info:")
+print(features.info(), "\n")
 
-print(y.info())
+print("Label Info:")
+print(labels.info(), "\n")
 
-print(X.shape, y.shape)
+print("Shapes:", features.shape, labels.shape, "\n")
+
+X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=42)
+
+model = MultiOutputClassifier(RandomForestClassifier(n_estimators=100, random_state=42))
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+print("Classification Report:")
+print(classification_report(y_test, y_pred, target_names=labels.columns))
+
+print("Parcel Activation Summary:")
+print(labels.sum())
+
+joblib.dump(model, "Farm_Irrigation_System.pkl")
+print("Model saved as Farm_Irrigation_System.pkl")

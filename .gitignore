@@ -6,7 +6,7 @@ __pycache__/
 .env/
 *.db
 
-# Jupyter checkpoints (if you use notebooks later)
+# Jupyter checkpoints 
 *.ipynb_checkpoints/
 
 # Data dumps
