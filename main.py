@@ -59,3 +59,7 @@ print(labels.sum())
 
 joblib.dump(model, "Farm_Irrigation_System.pkl")
 print("Model saved as Farm_Irrigation_System.pkl")
+
+
+# Save the trained model to a file
+joblib.dump(model, "Farm_Irrigation_System.pkl")
